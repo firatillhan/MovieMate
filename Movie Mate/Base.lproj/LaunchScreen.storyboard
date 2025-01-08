@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -17,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backGround" translatesAutoresizingMaskIntoConstraints="NO" id="VpH-to-avj">
-                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Movie Mate" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Obw-Wg-4iG">
                                 <rect key="frame" x="0.0" y="59" width="393" height="100"/>
@@ -33,11 +34,11 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Obw-Wg-4iG" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="4PQ-1b-Kcz"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="VpH-to-avj" secondAttribute="trailing" id="5VL-n4-8Jt"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="VpH-to-avj" secondAttribute="bottom" id="Ipt-PA-35t"/>
-                            <constraint firstItem="VpH-to-avj" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="J7L-Oi-nPw"/>
+                            <constraint firstItem="VpH-to-avj" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="CKj-0i-y6p"/>
+                            <constraint firstItem="VpH-to-avj" firstAttribute="trailing" secondItem="Obw-Wg-4iG" secondAttribute="trailing" id="K44-Dt-gaz"/>
                             <constraint firstItem="Obw-Wg-4iG" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Oyo-uQ-Q2S"/>
-                            <constraint firstItem="VpH-to-avj" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="hKv-TJ-exl"/>
+                            <constraint firstItem="VpH-to-avj" firstAttribute="leading" secondItem="Obw-Wg-4iG" secondAttribute="leading" id="SdQ-Hi-DFD"/>
+                            <constraint firstItem="VpH-to-avj" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="topMargin" constant="-59" id="TPd-Tg-TXb"/>
                             <constraint firstItem="Obw-Wg-4iG" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="sdc-tr-HRg"/>
                         </constraints>
                     </view>

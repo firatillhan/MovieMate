@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3A41C6BE2D070D16007627BE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3A41C6BD2D070D16007627BE /* FirebaseAuth */; };
+		3A41C6C02D070D16007627BE /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3A41C6BF2D070D16007627BE /* FirebaseDatabase */; };
+		3A41C6C22D070D16007627BE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 3A41C6C12D070D16007627BE /* FirebaseFirestore */; };
+		3A41C6C42D070D16007627BE /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 3A41C6C32D070D16007627BE /* FirebaseStorage */; };
+		3A78B0112D1B557B000CEDF5 /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = 3A78B0102D1B557B000CEDF5 /* SwiftCSV */; };
+		3ABC77AA2D0CA2AB00925E71 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 3ABC77A92D0CA2AB00925E71 /* SDWebImage */; };
+		3ABC77AC2D0CA2AB00925E71 /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3ABC77AB2D0CA2AB00925E71 /* SDWebImageMapKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		3AEFF2102CFB91B00066E51B /* Movie Mate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Movie Mate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +46,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A41C6C02D070D16007627BE /* FirebaseDatabase in Frameworks */,
+				3A41C6C42D070D16007627BE /* FirebaseStorage in Frameworks */,
+				3A41C6BE2D070D16007627BE /* FirebaseAuth in Frameworks */,
+				3A41C6C22D070D16007627BE /* FirebaseFirestore in Frameworks */,
+				3ABC77AC2D0CA2AB00925E71 /* SDWebImageMapKit in Frameworks */,
+				3ABC77AA2D0CA2AB00925E71 /* SDWebImage in Frameworks */,
+				3A78B0112D1B557B000CEDF5 /* SwiftCSV in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +95,13 @@
 			);
 			name = "Movie Mate";
 			packageProductDependencies = (
+				3A41C6BD2D070D16007627BE /* FirebaseAuth */,
+				3A41C6BF2D070D16007627BE /* FirebaseDatabase */,
+				3A41C6C12D070D16007627BE /* FirebaseFirestore */,
+				3A41C6C32D070D16007627BE /* FirebaseStorage */,
+				3ABC77A92D0CA2AB00925E71 /* SDWebImage */,
+				3ABC77AB2D0CA2AB00925E71 /* SDWebImageMapKit */,
+				3A78B0102D1B557B000CEDF5 /* SwiftCSV */,
 			);
 			productName = "Movie Mate";
 			productReference = 3AEFF2102CFB91B00066E51B /* Movie Mate.app */;
@@ -107,6 +131,11 @@
 			);
 			mainGroup = 3AEFF2072CFB91B00066E51B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3A41C6BC2D070D16007627BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				3ABC77A82D0CA2AB00925E71 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				3A78B00F2D1B557B000CEDF5 /* XCRemoteSwiftPackageReference "SwiftCSV" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3AEFF2112CFB91B00066E51B /* Products */;
 			projectDirPath = "";
@@ -151,8 +180,9 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -179,8 +209,9 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -335,6 +366,71 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3A41C6BC2D070D16007627BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.6.0;
+			};
+		};
+		3A78B00F2D1B557B000CEDF5 /* XCRemoteSwiftPackageReference "SwiftCSV" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftcsv/SwiftCSV.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.0;
+			};
+		};
+		3ABC77A82D0CA2AB00925E71 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.20.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3A41C6BD2D070D16007627BE /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A41C6BC2D070D16007627BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		3A41C6BF2D070D16007627BE /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A41C6BC2D070D16007627BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		3A41C6C12D070D16007627BE /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A41C6BC2D070D16007627BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		3A41C6C32D070D16007627BE /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A41C6BC2D070D16007627BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		3A78B0102D1B557B000CEDF5 /* SwiftCSV */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A78B00F2D1B557B000CEDF5 /* XCRemoteSwiftPackageReference "SwiftCSV" */;
+			productName = SwiftCSV;
+		};
+		3ABC77A92D0CA2AB00925E71 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ABC77A82D0CA2AB00925E71 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		3ABC77AB2D0CA2AB00925E71 /* SDWebImageMapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ABC77A82D0CA2AB00925E71 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImageMapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3AEFF2082CFB91B00066E51B /* Project object */;
 }
