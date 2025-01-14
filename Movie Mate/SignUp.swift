@@ -37,7 +37,7 @@ class SignUp: UIViewController {
     
     @IBAction func signUpButton(_ sender: Any) {
         if passwordText.text != password2Text.text {
-            makeAlert(titleInput: "Hata", messageInput: "Şifreler aynı değil", button: "Tamam")
+            makeAlert(titleInput: "ERROR", messageInput: "Passwords are not the same", button: "OK")
             return
         } else {
             guard let username = usernameText.text, !username.isEmpty,
@@ -45,7 +45,7 @@ class SignUp: UIViewController {
                   let password = passwordText.text, !password.isEmpty,
                   let password2 = password2Text.text, !password2.isEmpty
             else {
-                self.makeAlert(titleInput: "Hata", messageInput: "Lütfen Bütün alanları doldurunuz!!!", button: "TAMAM")
+                self.makeAlert(titleInput: "ERROR", messageInput: "Please fill in all fields!!!", button: "OK")
                 return
             }
             
@@ -54,12 +54,12 @@ class SignUp: UIViewController {
             query.getDocuments { (querySnap,error) in
                 if let error = error {
                     print(error)
-                    self.makeAlert(titleInput: "Hata", messageInput: "Bu kullanıcı adı daha önce alınmış", button: "Tamam")
+                    self.makeAlert(titleInput: "ERROR", messageInput: "This username is already taken", button: "OK")
                 } else {
                     Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                         
                         if let error = error {
-                            self.makeAlert(titleInput: "Hata", messageInput: error.localizedDescription, button: "TAMAM")
+                            self.makeAlert(titleInput: "ERROR", messageInput: error.localizedDescription, button: "OK")
                             return
                         }
                         guard let uid = authResult?.user.uid else { return }
@@ -73,9 +73,9 @@ class SignUp: UIViewController {
                             "userPhoto": ""
                         ]) { error in
                             if let error = error {
-                                self.makeAlert(titleInput: "Hata", messageInput: error.localizedDescription, button: "TAMAM")
+                                self.makeAlert(titleInput: "ERROR", messageInput: error.localizedDescription, button: "OK")
                             } else {
-                                self.makeAlert(titleInput: "Tebrikler", messageInput: "Kayıt işleminiz tamamlanmıştır.", button: "TAMAM") { UIAlertAction in
+                                self.makeAlert(titleInput: "Congratulations", messageInput: "Your registration process is completed.", button: "OK") { UIAlertAction in
                                     self.tamam()
                                 }
                             }
@@ -87,7 +87,6 @@ class SignUp: UIViewController {
     }
     
     @objc func tamam() {
-        print("Tamam buttona basıldı")
-        self.performSegue(withIdentifier: "FirstTabBar", sender: nil)
+        self.performSegue(withIdentifier: "toAnasayfa", sender: nil)
     }
 }

@@ -15,6 +15,7 @@ class MovieComments: UIViewController {
    
     var commentList = [Comments]()
     var movieId:String?
+    var userId:String?
     var SelectedmovieName:String?
     var commentId = String()
     var emptyMessageLabel: UILabel!
@@ -89,26 +90,22 @@ class MovieComments: UIViewController {
                         
                         let commentId = document.documentID
                         print("comment id: \(commentId)")
-                        let commentText = data["commentText"] as? String ?? ""
-                        let commentDate = data["commentDate"] as? String ?? ""
+                        let commentText = data["commentText"] as? String ?? ""                       
                         
-                        if let commentDate = document.data()["commentDate"] as? Timestamp {
-                                            // Timestamp'i Date'e dönüştür
-                                            let date = commentDate.dateValue()
-                                            
-                                            // Date'i istediğin formatta yazdır
-                                            let dateFormatter = DateFormatter()
-                                            dateFormatter.dateStyle = .medium
-                                            dateFormatter.timeStyle = .none
+                        if let commentDate = data["commentDate"] as? Timestamp {
+                            // Timestamp'i Date'e dönüştür
+                            let date = commentDate.dateValue()
+                            // Date'i istediğin formatta yazdır
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateStyle = .medium
+                            dateFormatter.timeStyle = .none
                             self.formattedDate = dateFormatter.string(from: date)
-                                            
                             print("Tarih: \(self.formattedDate)")
-                                        }
+                        }
 
                         let movieId = self.movieId
                         let userId = data["userId"] as? String ?? ""
-                        
-                        
+            
                         group.enter()
                         self.database.collection("users").document(userId).getDocument { document, error in
                             if let error = error {
@@ -125,16 +122,23 @@ class MovieComments: UIViewController {
                             group.leave()
                             self.tableView.reloadData()
                         }
-
-                            
                     }
                     self.tableView.reloadData()
                 }
             }
         }
-    } // likeMovieFetch fonksiyon bitiş
+    } //  fonksiyon bitiş
     
+
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "otherUserProfile",
+           let destinationVC = segue.destination as? MovieProfile,
+           let selectedUserId = sender as? String {
+            destinationVC.selectedUserId = selectedUserId
+        }
+    }
+
     
 
   
@@ -153,10 +157,14 @@ extension MovieComments: UITableViewDelegate, UITableViewDataSource{
         cell.commentDate.text = comment.commentDate
         cell.username.text = comment.userName
         cell.commentText.text = comment.commentText
-        
-        
-        
+        cell.userId.text = comment.userId
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let comment = commentList[indexPath.row]
+        print("yorum yapan kullanıcının id si: \(comment.userId)")
+        self.performSegue(withIdentifier: "otherUserProfile", sender: comment.userId)
     }
     
     

@@ -13,7 +13,7 @@ class MovieCommentsTableViewCell: UITableViewCell {
     @IBOutlet weak var userImage: UIImageView!
     @IBOutlet weak var commentText: UILabel!
     @IBOutlet weak var commentDate: UILabel!
-    
+    @IBOutlet weak var userId: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

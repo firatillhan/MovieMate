@@ -35,7 +35,7 @@ class MovieProfileEdit: UIViewController, UIImagePickerControllerDelegate, UINav
         userPhoto.clipsToBounds = true
         
         let gestureRecognizerKlavye = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-                view.addGestureRecognizer(gestureRecognizerKlavye)
+        view.addGestureRecognizer(gestureRecognizerKlavye)
         
         userPhoto.isUserInteractionEnabled = true
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(resimSec))
@@ -92,40 +92,58 @@ class MovieProfileEdit: UIViewController, UIImagePickerControllerDelegate, UINav
                 let storageReference = storage.reference()
                 let mediaFolder = storageReference.child("userPhotos")
 
-                if let data = userPhoto.image?.jpegData(compressionQuality: 0.99) {
-                    let imageReference = mediaFolder.child("\(uid).jpg")
-                    let metadata = StorageMetadata()
-                    metadata.contentType = "image/jpeg"
-
-                    imageReference.putData(data, metadata: metadata) { metadata, error in
-                        if let error = error {
-                            print("Error uploading image: \(error.localizedDescription)")
-                            return
-                        }
-                        imageReference.downloadURL { url, error in
+        if let data = userPhoto.image?.jpegData(compressionQuality: 0.99) {
+            let imageReference = mediaFolder.child("\(uid).jpg")
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            
+            imageReference.putData(data, metadata: metadata) { metadata, error in
+                if let error = error {
+                    print("Error uploading image: \(error.localizedDescription)")
+                    return
+                }
+                imageReference.downloadURL { url, error in
+                    if let error = error {
+                        print("Error getting download URL: \(error.localizedDescription)")
+                        return
+                    }
+                    if let imageURL = url?.absoluteString {
+                        guard let uid = Auth.auth().currentUser?.uid else { return }
+                        
+                        self.database.collection("users").document(uid).updateData([
+                            "userPhoto": imageURL
+                        ]) { error in
                             if let error = error {
-                                print("Error getting download URL: \(error.localizedDescription)")
-                                return
-                            }
-                            if let imageURL = url?.absoluteString {
-                                guard let uid = Auth.auth().currentUser?.uid else { return }
-
-                                self.database.collection("users").document(uid).updateData([
-                                    "userPhoto": imageURL
-                                ]) { error in
-                                    if let error = error {
-                                        print("Error saving image URL to Firestore: \(error.localizedDescription)")
-                                    } else {
-                                        self.makeAlert(titleInput: "Tebrikler", messageInput: "Profil resminiz güncellendi", button: "Tamam")
-                                    }
-                                }
+                                print("Error saving image URL to Firestore: \(error.localizedDescription)")
+                            } else {
+                                self.makeAlert(titleInput: "Congratulations", messageInput: "Your profile picture has been updated.", button: "OK")
                             }
                         }
                     }
                 }
-        
-        
+            }
+            
+        }
     }
+    
+    @objc func resimSec() {
+        let pickerController = UIImagePickerController()
+        pickerController.delegate = self
+        pickerController.sourceType = .photoLibrary
+        present(pickerController, animated: true, completion: nil)
+    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        userPhoto.image = info[.originalImage] as? UIImage
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    
+    
+    @IBAction func favoriCommentWatchedEdit(_ sender: Any) {
+        performSegue(withIdentifier: "edit", sender: nil)
+    }
+    
+    
     
     @IBAction func SaveButton(_ sender: Any) {
         
@@ -138,9 +156,9 @@ class MovieProfileEdit: UIViewController, UIImagePickerControllerDelegate, UINav
                 ]
                 self.database.collection("users").document(uid).updateData(userData) { error in
                     if let error = error {
-                        self.makeAlert(titleInput: "Hata", messageInput: error.localizedDescription, button: "TAMAM")
+                        self.makeAlert(titleInput: "ERROR", messageInput: error.localizedDescription, button: "OK")
                     } else {
-                        self.makeAlert(titleInput: "Tebrikler", messageInput: "Profiliniz Güncellendi", button: "Tamam")
+                        self.makeAlert(titleInput: "Congratulations", messageInput: "Your profile has been updated", button: "OK")
                     }
                 }
         }
@@ -148,17 +166,7 @@ class MovieProfileEdit: UIViewController, UIImagePickerControllerDelegate, UINav
     
     
     
-    
-    @objc func resimSec() {
-        let pickerController = UIImagePickerController()
-        pickerController.delegate = self
-        pickerController.sourceType = .photoLibrary
-        present(pickerController, animated: true, completion: nil)
-    }
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        userPhoto.image = info[.originalImage] as? UIImage
-        self.dismiss(animated: true, completion: nil)
-    }
+
 
     
     @objc func hideKeyboard() {

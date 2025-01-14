@@ -12,27 +12,26 @@ import SDWebImage
 
 class MovieFeed: UIViewController {
 
+    @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var collectionView: UICollectionView!
     
     var movieList = [Movies]()
-    
+    var selectedSegmentIndex: Int = 0
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         movieCVDesign()
         collectionView.delegate = self
         collectionView.dataSource = self
-        movieFetch()
+        movieFetch(list: "movieName",arrangement: false)
     }
     override func viewWillAppear(_ animated: Bool) {
-        movieFetch()
         
     }
-    @IBAction func movieAddButton(_ sender: Any) {
-        performSegue(withIdentifier: "movieAdd", sender: nil)
-    }
-    
+   
     func movieCVDesign() {
+        
         let tasarim :UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         let genislik = self.collectionView.frame.size.width
         
@@ -43,9 +42,7 @@ class MovieFeed: UIViewController {
         tasarim.minimumInteritemSpacing = 5
         tasarim.minimumLineSpacing = 5
         collectionView.collectionViewLayout = tasarim
-        
     }
-    
 
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -58,12 +55,22 @@ class MovieFeed: UIViewController {
         } 
     }
 
+    @IBAction func activeControlButton(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+               case 0:
+                   movieFetch(list: "movieName",arrangement: false)
+               case 1:
+                   movieFetch(list: "movieRating",arrangement: true)
+               default:
+                   break
+               }
+               collectionView.reloadData()
+    }
+    
 
-    
-    
-    func movieFetch(){
+    func movieFetch(list:String, arrangement:Bool){
         let db = Firestore.firestore()
-        db.collection("filmListesi").order(by: "movieRating", descending: true).addSnapshotListener { (snapshot, error) in
+        db.collection("filmListesi").order(by: list, descending: arrangement).addSnapshotListener { (snapshot, error) in
            
             if let error = error {
                 self.makeAlert(titleInput: "Hata", messageInput: error.localizedDescription, button: "TAMAM")

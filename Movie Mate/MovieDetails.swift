@@ -17,19 +17,20 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
     @IBOutlet weak var updateButton: UIButton!
     @IBOutlet weak var movieImage: UIImageView!
     @IBOutlet weak var movieScore: UIButton!
-    @IBOutlet weak var movieGenre: UILabel!
+    @IBOutlet weak var movieName: UILabel!
     @IBOutlet weak var movieYear: UILabel!
     @IBOutlet weak var movieDuration: UILabel!
     @IBOutlet weak var movieDirector: UILabel!
     @IBOutlet weak var movieStars: UILabel!
     @IBOutlet weak var movieDescription: UILabel!
      
+    @IBOutlet weak var commentsButtonLabel: UIButton!
+    
     var movie:Movies?
     var favori:Favories?
     var watch:Watched?
     var movieId = String()
-    //var WmovieId = String()
-    var movieName = String()
+    var SmovieName = String()
     let storage = Storage.storage()
     var selectedImage: UIImage?
     
@@ -52,7 +53,7 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
             
             //resim seçmek için image view in tıklanabilirliğini aktif ediyoruz.
             movieImage.isUserInteractionEnabled = true
-            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(resimSec))
+            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(selectPicture))
             movieImage.addGestureRecognizer(gestureRecognizer)
         } else {
             updateButton.isHidden = true
@@ -67,7 +68,7 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
             movieImage.sd_setImage(with: URL(string: m.movieImage))
             let score = m.movieRating
             movieScore.setTitle("\(score)/10", for: .normal)
-            movieGenre.text = "\(m.movieName)"
+            movieName.text = "\(m.movieName)"
             movieYear.text = "Year: \(m.movieYear)"
             movieDuration.text = "Time: \(m.movieRunTime)"
             movieDirector.text = "Director: \(m.movieDirector)"
@@ -79,123 +80,55 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
             movieId = f.movieId
             print("Movie ID: \(movieId)")
             movieFetch(movieId: movieId)
-            
         }
-//        if WmovieId != "" {
-//           // movieFetch(watchId: WmovieId)
-//            
-//            print("movie deailts açıldı. \(WmovieId)")
-//            print("movie details sayfasında fonksiyonu çalıştı. MovieId: \(WmovieId)'.")
-//            
-//      
-//        }
+        //profil sayfasından gelen veriyi göstermek için
         if let w = watch {
             movieId = w.movieId
             print("Movie ID: \(movieId)")
             movieFetch(movieId: movieId)
             
         }
-        
-        
-        
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         self.movieImage.layer.cornerRadius = 10.0
         self.movieImage.layer.masksToBounds = true
+        movieCommentsCountFetch()
     }
     
-    func movieFetch(watchId:String){
-        print("movie details sayfasında movieFetch fonksiyonu çalıştı. MovieId: \(movieId)'.")
-        
-        database.collection("filmListesi").document(movieId).getDocument { [self] document, error in
-         
-            if let document = document, document.exists {
-                let group = DispatchGroup()
-                let data = document.data()
-                
-                self.movieName = data?["movieName"] as? String ?? ""
-                self.movieGenre.text = "\(self.movieName)"
 
-                
-                let movieGenre = data?["movieGenre"] as? String ?? ""
-                navigationController?.navigationBar.topItem?.title = "\(movieGenre)"
-                
-                movieDescription.text = data?["movieDescription"] as? String ?? ""
-                
-                let movieStars = data?["movieStars"] as? String ?? ""
-                self.movieStars.text = "Stars: \(movieStars)"
-                
-                let movieDirector = data?["movieDirector"] as? String ?? ""
-                self.movieDirector.text = "Director: \(movieDirector)"
-                
-                let movieRunTime = data?["movieRunTime"] as? String ?? ""
-                self.movieDuration.text = "Time: \(movieRunTime)"
-                
-                let movieYear = data?["movieYear"] as? String ?? ""
-                self.movieYear.text = "Year: \(movieYear)"
-                
-                let movieRating = data?["movieRating"] as? String ?? ""
-                movieScore.setTitle("\(movieRating)/10", for: .normal)
-                      
-                
-                
-                if let movieImage = document.data()?["movieImage"] as? String,
-                    let url = URL(string: movieImage) {
-                    self.movieImage.sd_setImage(with: url, completed: nil)
-                }
-                group.enter()
-             
-            }
-        }
-    } // filmleri çek finish
-    
     
     func movieFetch(movieId:String){
         print("movie details sayfasında movieFetch fonksiyonu çalıştı. MovieId: \(movieId)'.")
-        
         database.collection("filmListesi").document(movieId).getDocument { [self] document, error in
-         
             if let document = document, document.exists {
                 let group = DispatchGroup()
                 let data = document.data()
-                
-                movieName = data?["movieName"] as? String ?? ""
-                self.movieGenre.text = "\(movieName)"
-
-                
+                self.movieName.text = data?["movieName"] as? String ?? ""
                 let movieGenre = data?["movieGenre"] as? String ?? ""
                 navigationController?.navigationBar.topItem?.title = "\(movieGenre)"
-                
                 movieDescription.text = data?["movieDescription"] as? String ?? ""
-                
                 let movieStars = data?["movieStars"] as? String ?? ""
                 self.movieStars.text = "Stars: \(movieStars)"
-                
                 let movieDirector = data?["movieDirector"] as? String ?? ""
                 self.movieDirector.text = "Director: \(movieDirector)"
-                
                 let movieRunTime = data?["movieRunTime"] as? String ?? ""
                 self.movieDuration.text = "Time: \(movieRunTime)"
-                
                 let movieYear = data?["movieYear"] as? String ?? ""
                 self.movieYear.text = "Year: \(movieYear)"
-                
                 let movieRating = data?["movieRating"] as? String ?? ""
                 movieScore.setTitle("\(movieRating)/10", for: .normal)
-                      
-                
-                
                 if let movieImage = document.data()?["movieImage"] as? String,
+                   
                     let url = URL(string: movieImage) {
                     self.movieImage.sd_setImage(with: url, completed: nil)
                 }
                 group.enter()
-             
             }
         }
     } // filmleri çek finish
     
-    @objc func resimSec() {
+    @objc func selectPicture() {
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
         pickerController.sourceType = .photoLibrary
@@ -207,11 +140,6 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
         }
         self.dismiss(animated: true, completion: nil)
     }
-
-    
-    
-    
-    
     
     @IBAction func updateButton(_ sender: Any) {
         //resim güncelleme işlemi
@@ -224,7 +152,7 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
             let imageReference = mediaFolder.child("\(uuid).jpg")
             imageReference.putData(data,metadata: nil){ (metadata,error) in
                 if error != nil {
-                    self.makeAlert(titleInput: "Hata!", messageInput: error?.localizedDescription ?? "Bilinmeyen hata", button: "TAMAM")
+                    self.makeAlert(titleInput: "Error!", messageInput: error?.localizedDescription ?? "Unknown error", button: "OK")
                 } else { //else başlangıç
                     imageReference.downloadURL { (url, error) in
                         if error == nil {
@@ -233,19 +161,15 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
                             let movieImageUpdate = ["movieImage": movieImageUrl!] as [String : Any]
                             let database = Firestore.firestore()
                             
-                            
-                            
                             database.collection("filmListesi").document(self.movieId).updateData(movieImageUpdate) { error in
                                 if let error = error {
                                     print("Error updating user data: \(error.localizedDescription)")
                                 } else {
-                                    self.makeAlert(titleInput: "Tebrikler", messageInput: "Güncellendi", button: "TAMAM") { UIAlertAction in
-                                        self.geriDon()
+                                    self.makeAlert(titleInput: "Congratulations", messageInput: "Updated", button: "OK") { UIAlertAction in
+                                        self.goBackButton()
                                     }
                                 }
-                            }
-                            
-                            
+                            } 
                         }
                     }
                 }
@@ -268,13 +192,13 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
         
         query.getDocuments { (querySnapshot, error) in
             if let error = error {
-                self.makeAlert(titleInput: "Hata", messageInput: error.localizedDescription, button: "Tamam")
+                self.makeAlert(titleInput: "ERROR", messageInput: error.localizedDescription, button: "OK")
                 return
             }
             
             if let documents = querySnapshot?.documents, !documents.isEmpty {
                 // Kullanıcının bu filmi daha önce favorilere eklediğini belirten hata mesajı
-                self.makeAlert(titleInput: "Hata", messageInput: "Bu film zaten favorilerinizde mevcut.", button: "Tamam")
+                self.makeAlert(titleInput: "Error", messageInput: "This movie is already on your list.", button: "OK")
             } else {
                 if userId != "" && self.movieId != ""{
                     let likeAdd : [String:Any] = [
@@ -287,12 +211,12 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
                         if let error = error {
                             print("Error \(error)")
                         } else {
-                            self.makeAlert(titleInput: "Tebrikler", messageInput: "Film başarılı bir şekilde favori listenize eklendi", button: "TAMAM")
+                            self.makeAlert(titleInput: "Congratulations", messageInput: "The movie has been successfully added to your list", button: "OK")
                         }
                     }
                 } else {
                     
-                    self.makeAlert(titleInput: "Hata", messageInput: "Bilinmeyen bir hata oluştu", button: "TAMAM")
+                    self.makeAlert(titleInput: "ERROR", messageInput: "An unknown error occurred", button: "OK")
                     }
                 }
             }
@@ -314,13 +238,13 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
         
         query.getDocuments { (querySnapshot, error) in
             if let error = error {
-                self.makeAlert(titleInput: "Hata", messageInput: error.localizedDescription, button: "Tamam")
+                self.makeAlert(titleInput: "ERROR", messageInput: error.localizedDescription, button: "OK")
                 return
             }
             
             if let documents = querySnapshot?.documents, !documents.isEmpty {
                 // Kullanıcının bu filmi daha önce izlediği listeye eklediğini belirten hata mesajı
-                self.makeAlert(titleInput: "Hata", messageInput: "Bu film zaten listenizde mevcut.", button: "Tamam")
+                self.makeAlert(titleInput: "Error", messageInput: "This movie is already on your list.", button: "OK")
             } else {
                 if userId != "" && self.movieId != ""{
                     let watchedAdd : [String:Any] = [
@@ -334,12 +258,12 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
                         if let error = error {
                             print("Error \(error)")
                         } else {
-                            self.makeAlert(titleInput: "Tebrikler", messageInput: "Film başarılı bir şekilde listenize eklendi", button: "TAMAM")
+                            self.makeAlert(titleInput: "Congratulations", messageInput: "The movie has been successfully added to your list", button: "OK")
                         }
                     }
                 } else {
                     
-                    self.makeAlert(titleInput: "Hata", messageInput: "Bilinmeyen bir hata oluştu", button: "TAMAM")
+                    self.makeAlert(titleInput: "Error", messageInput: "An unknown error occurred", button: "OK")
                     }
                 }
             }
@@ -352,7 +276,7 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
         print("userId\(currentUser.uid)")
         
             // Alert controller oluşturuyoruz
-            let alert = UIAlertController(title: "write a review for this movie", message: nil, preferredStyle: .alert)
+            let alert = UIAlertController(title: "Write a review for this movie", message: nil, preferredStyle: .alert)
             
             // Alert'a bir text field ekliyoruz
             alert.addTextField { (textField) in
@@ -375,8 +299,9 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
                         if error != nil {
                             self.makeAlert(titleInput: "Error!", messageInput: error?.localizedDescription ?? "Error!", button: "OK")
                         } else {
-                            self.makeAlert(titleInput: "Congratulations", messageInput: "your comment's add", button: "OK") { UIAlertAction in
-                                self.tamam()
+                            self.makeAlert(titleInput: "Congratulations", messageInput: "Your comment's add", button: "OK") { UIAlertAction in
+                                self.viewWillAppear(true)
+                                self.okButton()
                             }
                         }
                     })
@@ -404,7 +329,7 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
                if let destinationVC = segue.destination as? MovieComments {
                    // Filmin detaylarını Yorumlar sayfasına aktarıyoruz
                    destinationVC.movieId = movieId
-                   destinationVC.SelectedmovieName = movieName
+                   destinationVC.SelectedmovieName = SmovieName
                    
                 
                }
@@ -412,13 +337,30 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
        }
     
     
-    @objc func tamam(){
+    @objc func okButton(){
         self.tabBarController?.selectedIndex = 0
     }
     
-    @objc func geriDon(){
+    @objc func goBackButton(){
        // self.tabBarController?.selectedIndex = 0
         navigationController?.popViewController(animated: true)
+    }
+    
+    
+    //filme ait yorum sayısını veritabanından çekmek için
+    func movieCommentsCountFetch() {
+        let sorgu = database.collection("comments").whereField("movieId", isEqualTo: movieId)
+        sorgu.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                if let querySnapshot = querySnapshot {
+                    let sayi = querySnapshot.documents.count
+                    print("liste boş değil: \(sayi)")
+                    self.commentsButtonLabel.setTitle("Comments (\(sayi))", for: .normal)
+                }
+            }
+        }
     }
     
     

@@ -30,86 +30,16 @@ class MovieFavorite: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         print("movie favorite vc view will appear çalıştı")
-        likeMovieFetch()
+        likeMovieFetch(userId: currentUser.uid)
         favoriNumberFetch()
-        emptyLabel()
-        navigationItem.title = "\(currentUser.email ?? "_")"
+        navigationItem.title = "My Favorite Movie List"
 
     }
     
-    func emptyLabel(){
-        emptyMessageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
-        emptyMessageLabel.text = "No Like Movie"
-        emptyMessageLabel.textColor = .gray
-        emptyMessageLabel.textAlignment = .center
-        emptyMessageLabel.font = UIFont.systemFont(ofSize: 20)
-        tableView.backgroundView = emptyMessageLabel
-    }
     
-    
-    func favoriNumberFetch() {
-      
-        //favori sayısı 0 ise ekrana henüz yemek tarifi beğenmediniz yazısı gelecek.
+    func likeMovieFetch(userId:String){
         
-        let query = database.collection("movieLikes").whereField("userId", isEqualTo: currentUser.uid)
-        query.getDocuments { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                if let querySnapshot = querySnapshot {
-                    let sayi = querySnapshot.documents.count
-                    if  sayi == 0 {
-                        self.emptyMessageLabel.isHidden = false
-                        print("liste boş: \(sayi)")
-                        
-                    } else {
-                        self.emptyMessageLabel.isHidden = true
-                        print("liste boş değil")
-                    }
-                }
-            }
-        }
-        
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        let indeks = sender as? Int
-        let goingVC = segue.destination as! MovieDetails
-        goingVC.favori = likeList[indeks!]
-    }
-    
-    func likeDelete(likeId:String){
-        print("like delete fonksiyonu silinecek like id: \(likeId)")
-        
-        database.collection("movieLikes").document(likeId).delete { error in
-            if let error = error {
-                print(error.localizedDescription)
-            } else {
-                //self.Alert(titleInput: "Tebrikler", messageInput: "Başarılı bir şekilde begenilerden çıkarıldı!", button: "TAMAM")
-                self.Alert(titleInput: "UYARI", messageInput: "Beğendiğiniz film listenizden çıkarıldı", button: "Tamam")
-                self.likeList.removeAll(keepingCapacity: false)
-                self.tableView.reloadData()
-                self.viewWillAppear(true)
-            }
-        }
-    }
-    
-    func Alert(titleInput:String,messageInput:String,button:String) {
-        let alert = UIAlertController(title: titleInput, message: messageInput, preferredStyle: UIAlertController.Style.alert)
-        let button = UIAlertAction(title: button, style: .default) { UIAlertAction in
-            self.alertTamam()
-        }
-        alert.addAction(button)
-        self.present(alert, animated: true, completion: nil)
-    }
-    @objc func alertTamam(){
-        self.likeMovieFetch()
-    }
-    
-    func likeMovieFetch(){
-        
-        database.collection("movieLikes").whereField("userId", isEqualTo: currentUser.uid).addSnapshotListener { (snapshot,error) in
+        database.collection("movieLikes").whereField("userId", isEqualTo: userId).addSnapshotListener { (snapshot,error) in
             if error != nil {
                 self.makeAlert(titleInput: "Hata", messageInput: error?.localizedDescription ?? "Hata", button: "TAMAM")
             } else {
@@ -137,14 +67,68 @@ class MovieFavorite: UIViewController {
                             group.leave()
                             self.tableView.reloadData()
                         }
-
-                            
                     }
                     self.tableView.reloadData()
                 }
             }
         }
     } // likeMovieFetch fonksiyon bitiş
+    
+    func favoriNumberFetch() {
+      
+        emptyMessageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+        emptyMessageLabel.text = "No Like Movie"
+        emptyMessageLabel.textColor = .gray
+        emptyMessageLabel.textAlignment = .center
+        emptyMessageLabel.font = UIFont.systemFont(ofSize: 20)
+        tableView.backgroundView = emptyMessageLabel
+       
+        
+        let query = database.collection("movieLikes").whereField("userId", isEqualTo: currentUser.uid)
+        query.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                if let querySnapshot = querySnapshot {
+                    let sayi = querySnapshot.documents.count
+                    if  sayi == 0 {
+                        self.emptyMessageLabel.isHidden = false
+                        print("liste boş: \(sayi)")
+                        self.tableView.isHidden = true
+                        
+                    } else {
+                        self.emptyMessageLabel.isHidden = true
+                        print("liste boş değil")
+                        self.tableView.isHidden = false
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let indeks = sender as? Int
+        let destinationVC = segue.destination as! MovieDetails
+        destinationVC.favori = likeList[indeks!]
+    }
+    
+
+    
+    func Alert(titleInput:String,messageInput:String,button:String) {
+        let alert = UIAlertController(title: titleInput, message: messageInput, preferredStyle: UIAlertController.Style.alert)
+        let button = UIAlertAction(title: button, style: .default) { UIAlertAction in
+            self.alertTamam()
+        }
+        alert.addAction(button)
+        self.present(alert, animated: true, completion: nil)
+    }
+    @objc func alertTamam(){
+        self.likeMovieFetch(userId: currentUser.uid)
+    }
+    
+
 }
  
 extension MovieFavorite: UITableViewDelegate, UITableViewDataSource{
@@ -164,20 +148,20 @@ extension MovieFavorite: UITableViewDelegate, UITableViewDataSource{
         self.performSegue(withIdentifier: "favoriToDetail", sender: indexPath.row)
     }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") {
-            (contextualAction, view, boolValue) in
-            
-            let like = self.likeList[indexPath.row]
-            
-            print("trailing: \(like.likeId)")
-            self.likeDelete(likeId: like.likeId)
-        }
-        
-        return UISwipeActionsConfiguration(actions: [deleteAction])
-        
-        
-    }
+//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") {
+//            (contextualAction, view, boolValue) in
+//            
+//            let like = self.likeList[indexPath.row]
+//            
+//            print("trailing: \(like.likeId)")
+//            self.likeDelete(likeId: like.likeId)
+//        }
+//        
+//        return UISwipeActionsConfiguration(actions: [deleteAction])
+//        
+//        
+//    }
     
     
 }

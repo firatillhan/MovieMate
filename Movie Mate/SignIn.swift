@@ -20,7 +20,8 @@ class SignIn: UIViewController {
 
         // Do any additional setup after loading the view.
         passwordText.isSecureTextEntry = true
-
+        
+        //Boş alana tıklandığında klavyenin kapanmasını sağlar.
         let gestureRecognizerKlavye = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
                 view.addGestureRecognizer(gestureRecognizerKlavye)
     }
@@ -28,14 +29,14 @@ class SignIn: UIViewController {
                view.endEditing(true)
        }
     @IBAction func SignInButton(_ sender: Any) {
-        
+        // Giriş yapma işlemi
         if emailText.text != nil && passwordText.text != nil {
              let email = emailText.text
              let password = passwordText.text
              
              Auth.auth().signIn(withEmail: email!, password: password!) { (autdata, error) in
                  if error != nil {
-                     self.makeAlert(titleInput: "Error", messageInput: error?.localizedDescription ?? "Error", button: "Tamam")
+                     self.makeAlert(titleInput: "ERROR", messageInput: error?.localizedDescription ?? "ERROR", button: "OK")
                  } else {
                      self.performSegue(withIdentifier: "toAnasayfa", sender: nil)
                      
@@ -43,7 +44,7 @@ class SignIn: UIViewController {
                  
              }
          } else {
-             makeAlert(titleInput: "Hata", messageInput: "Email/Şifre boş olamaz!!", button: "Tamam")
+             makeAlert(titleInput: "ERROR", messageInput: "Email/Password cannot be blank!!", button: "OK")
          }
     }
     
