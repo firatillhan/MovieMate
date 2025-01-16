@@ -7,10 +7,12 @@
 
 import Foundation
 import UIKit
-
+import FirebaseAuth
 
 
 extension MovieProfile {
+    
+   
     
     func movieDesign(){
         let tasarim :UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -24,13 +26,15 @@ extension MovieProfile {
         collectionView.collectionViewLayout = tasarim
     }
     
+   
+    
     
     func userData(id:String) {
         print("User id: \(id)")
         if currentUser.uid != id {
-            profileEdit.isHidden = true
+            profileEdit.setTitle("Follow", for: .normal)
         } else {
-            profileEdit.isHidden = false
+            profileEdit.setTitle("Profile Edit", for: .normal)
         }
         
         database.collection("users").document(id).getDocument { document, error in

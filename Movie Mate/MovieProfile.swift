@@ -18,6 +18,7 @@ class MovieProfile: UIViewController {
     @IBOutlet weak var userNameAndSurname: UILabel!
     @IBOutlet weak var userEmail: UILabel!
     @IBOutlet weak var userBiografi: UILabel!
+    @IBOutlet weak var ProfilView: UIView!
     @IBOutlet weak var userWatchedCount: UILabel!
     
     @IBOutlet weak var profileEdit: UIButton!
@@ -31,23 +32,37 @@ class MovieProfile: UIViewController {
     var movieName = String()
     var selectedUserId: String?
     
+    //let girisYapanKullanici = self.currentUser.uid
+    //let profilineBakilanKullanici = self.selectedUserId!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        userPhoto.layer.cornerRadius = CGRectGetWidth(self.userPhoto.frame) / 2
-        userPhoto.layer.borderWidth = 2
         navigationController?.navigationBar.topItem?.title = users_username
         collectionView.delegate = self
         collectionView.dataSource = self
         movieDesign()
-        
+        NSLayoutConstraint.activate([
+            userPhoto.heightAnchor.constraint(equalTo: ProfilView.heightAnchor, multiplier: 0.5),
+            userPhoto.widthAnchor.constraint(equalTo: userPhoto.heightAnchor),
+        ])
+        userPhoto.layer.cornerRadius = (userPhoto.frame.height * 1) / 2
+        userPhoto.layer.borderWidth = 3
+        userPhoto.layer.masksToBounds = true
+
+
+       
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
+       
+        
         if let user = selectedUserId {
             userData(id: user)
+            followControl(CurrentUserID: currentUser.uid, VisitedUserID: user)
+
         } else {
             collectionView.reloadData()
             userData(id: currentUser.uid)
@@ -64,7 +79,90 @@ class MovieProfile: UIViewController {
     }
     
     @IBAction func profileEditButton(_ sender: Any) {
-        performSegue(withIdentifier: "toProfileEditing", sender: nil)
+        if let title = (sender as AnyObject).currentTitle {
+            switch title {
+            case "Profile Edit":
+                performSegue(withIdentifier: "toProfileEditing", sender: nil)
+            case "Follow":
+                following(CurrentUserID: currentUser.uid, VisitedUserID: selectedUserId!)
+            case "Following":
+                deleteFollow(CurrentUserID: currentUser.uid, VisitedUserID: selectedUserId!)
+            default:
+               print("Error")
+            }
+        }
+    }
+    func deleteFollow(CurrentUserID:String,VisitedUserID:String){
+        let delete = database.collection("Follow")
+        let query = delete.whereField("FollowerUserId", isEqualTo:CurrentUserID).whereField("FollowedUserId", isEqualTo: selectedUserId!)
+        
+        query.getDocuments { (snapshot, error) in
+            
+            // Iterate through documents and delete each
+            for document in snapshot!.documents {
+                document.reference.delete { error in
+                    if let error = error {
+                        print("Error deleting follow document: \(error.localizedDescription)")
+                        self.makeAlert(titleInput: "ERROR", messageInput: "delete işlemi Error", button: "OK")
+                    } else {
+
+                        self.viewWillAppear(true)
+
+                    }
+                }
+            }
+        }
+    }
+  
+    func followControl(CurrentUserID:String,VisitedUserID:String){
+        // Belirli bir dökümanı kontrol etme
+        let followRef = database.collection("Follow")
+        let query = followRef.whereField("FollowerUserId", isEqualTo:CurrentUserID).whereField("FollowedUserId", isEqualTo: selectedUserId!)
+        
+        query.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                self.makeAlert(titleInput: "ERROR", messageInput: error.localizedDescription, button: "OK")
+                return
+            }
+            if let documents = querySnapshot?.documents, !documents.isEmpty {
+                // Kullanıcının bu kişiyi daha önce takip ediyorsa
+                self.profileEdit.setTitle("Following", for: .normal)
+            }
+        }
+    }
+
+    func following(CurrentUserID:String,VisitedUserID:String){
+        
+        // Belirli bir dökümanı kontrol etme
+        let followRef = database.collection("Follow")
+        let query = followRef.whereField("FollowerUserId", isEqualTo:CurrentUserID).whereField("FollowedUserId", isEqualTo: selectedUserId!)
+        
+        query.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                self.makeAlert(titleInput: "ERROR", messageInput: error.localizedDescription, button: "OK")
+                return
+            }
+            
+            if let documents = querySnapshot?.documents, !documents.isEmpty {
+                // Kullanıcının bu kişiyi daha önce takip ediyorsa
+                self.profileEdit.setTitle("Following", for: .normal)
+            } else {
+                let newData = ["FollowerUserId": CurrentUserID,
+                               "FollowedUserId": self.selectedUserId!,
+                               "followDate": FieldValue.serverTimestamp()] as [String : Any]
+                self.database.collection("Follow").addDocument(data: newData) { (error) in
+                    if let error = error {
+                        print("Error: \(error.localizedDescription)")
+                    }
+                    self.profileEdit.setTitle("Following", for: .normal)
+                    self.viewWillAppear(true)
+                }
+            }
+            
+        }
+        
+        
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -93,9 +191,7 @@ extension MovieProfile: UICollectionViewDelegate, UICollectionViewDataSource{
         let w = watchedList[indexPath.row]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileCell", for: indexPath) as! MovieProfileCollectionViewCell
         cell.movieImage.sd_setImage(with: URL(string: w.movieImage))
-       // cell.movieImage.image = UIImage(named: "ImagePic")
         cell.movieIdLabel.text = w.movieId
-       // print("movie id: \(w.movieId)")
         return cell
     }
    
