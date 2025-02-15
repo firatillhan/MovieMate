@@ -45,7 +45,7 @@ extension MovieProfile {
                 let users_name = data?["name"] as? String ?? "no name"
                 let users_surname = data?["surname"] as? String ?? "no surname"
                 self.userNameAndSurname.text = "\(users_name) \(users_surname)"
-                self.userEmail.text = data?["userEmail"] as? String ?? ""
+                //self.userEmail.text = data?["userEmail"] as? String ?? ""
                 self.userBiografi.text = data?["userBiografi"] as? String ?? ""
                 self.users_username = data?["username"] as? String ?? ""
                 let users_userPhotoUrl = data?["userPhoto"] as? String ?? ""
@@ -61,7 +61,7 @@ extension MovieProfile {
         
         database.collection("movieWatched").whereField("userId", isEqualTo: id).addSnapshotListener { (snapshot,error) in
             if error != nil {
-                self.makeAlert(titleInput: "Hata", messageInput: error?.localizedDescription ?? "Hata", button: "TAMAM")
+                self.makeAlert(titleInput: "ERROR", messageInput: error?.localizedDescription ?? "ERROR", button: "OK")
             } else {
                 if snapshot?.isEmpty != true && snapshot != nil {
                     let group = DispatchGroup()
@@ -76,7 +76,7 @@ extension MovieProfile {
                         group.enter()
                         self.database.collection("filmListesi").document(watched_movieId).getDocument { document, error in
                             if let error = error {
-                                print("Error \(error)")
+                                print("ERROR \(error)")
                             } else {
                                 self.movieName = document?.data()?["movieName"] as? String ?? "No Movie Name"
                                 let movieImage = document?.data()?["movieImage"] as? String ?? "No Movie Image"
@@ -124,6 +124,37 @@ extension MovieProfile {
                 }
             }
         }
+        // Profili gösterilen kullanıcının takip ettiği kişi sayısı...
+        let takipEdilen = database.collection("Follow").whereField("FollowerUserId", isEqualTo: id)
+
+        takipEdilen.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                if let querySnapshot = querySnapshot {
+                    let sayi = querySnapshot.documents.count
+                    self.followLabel.text = "\(sayi)"
+                    
+                }
+            }
+        }
+        
+        let takipci = database.collection("Follow").whereField("FollowedUserId", isEqualTo: id)
+
+        takipci.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+            } else {
+                if let querySnapshot = querySnapshot {
+                    let sayi = querySnapshot.documents.count
+                    self.followersLabel.text = "\(sayi)"
+                    
+                }
+            }
+        }
+
+        
+        
     } //guest user data finish
     
     

@@ -16,11 +16,15 @@ class MovieProfile: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var userPhoto: UIImageView!
     @IBOutlet weak var userNameAndSurname: UILabel!
-    @IBOutlet weak var userEmail: UILabel!
     @IBOutlet weak var userBiografi: UILabel!
     @IBOutlet weak var ProfilView: UIView!
     @IBOutlet weak var userWatchedCount: UILabel!
     
+    @IBOutlet weak var followingLabel: UILabel!
+    
+    @IBOutlet weak var followersLabel: UILabel!
+    
+    @IBOutlet weak var followLabel: UILabel!
     @IBOutlet weak var profileEdit: UIButton!
     var emptyMessageLabel: UILabel!
     
@@ -43,13 +47,14 @@ class MovieProfile: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         movieDesign()
-        NSLayoutConstraint.activate([
-            userPhoto.heightAnchor.constraint(equalTo: ProfilView.heightAnchor, multiplier: 0.5),
-            userPhoto.widthAnchor.constraint(equalTo: userPhoto.heightAnchor),
-        ])
-        userPhoto.layer.cornerRadius = (userPhoto.frame.height * 1) / 2
-        userPhoto.layer.borderWidth = 3
+//        NSLayoutConstraint.activate([
+//            userPhoto.heightAnchor.constraint(equalTo: ProfilView.heightAnchor, multiplier: 0.5),
+//            userPhoto.widthAnchor.constraint(equalTo: userPhoto.heightAnchor),
+//        ])
+        userPhoto.layer.cornerRadius = CGRectGetWidth(self.userPhoto.frame)/2.0
         userPhoto.layer.masksToBounds = true
+        let genislik = userPhoto.frame.size.width
+        print("foto genislik:\(genislik)")
 
 
        

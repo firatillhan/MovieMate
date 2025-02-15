@@ -35,12 +35,13 @@ class MovieFeed: UIViewController {
         let tasarim :UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         let genislik = self.collectionView.frame.size.width
         
-        tasarim.sectionInset = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
-        print("Genişlik: \(genislik)")
-        let hucreGenislik = (genislik-10)/2
+        tasarim.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        print("CollectionView Genişlik: \(genislik)")
+        let hucreGenislik = (genislik)/2
+        print("Hücre genişlik: \(hucreGenislik)")
         tasarim.itemSize = CGSize(width: hucreGenislik, height: hucreGenislik*1.7)
-        tasarim.minimumInteritemSpacing = 5
-        tasarim.minimumLineSpacing = 5
+        tasarim.minimumInteritemSpacing = 0
+        tasarim.minimumLineSpacing = 0
         collectionView.collectionViewLayout = tasarim
     }
 
