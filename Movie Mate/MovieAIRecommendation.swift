@@ -12,7 +12,7 @@ import FirebaseAuth
 
 class MovieAIRecommendation: UIViewController {
     
-    var IPadres = "192.168.1.104"
+    var IPadres = "172.20.10.3"
 
 
     @IBOutlet weak var tableView: UITableView!
