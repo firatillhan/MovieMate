@@ -28,8 +28,10 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
     
     var movie:Movies?
     var favori:Favories?
+    var oneri:Oneriler?
     var watch:Watched?
     var movieId = String()
+    var oneriFilmName = String()
     var SmovieName = String()
     let storage = Storage.storage()
     var selectedImage: UIImage?
@@ -86,7 +88,11 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
             movieId = w.movieId
             print("Movie ID: \(movieId)")
             movieFetch(movieId: movieId)
-            
+        }
+        if let o = oneri {
+            oneriFilmName = o.oneriFilmName
+            print("Movie Name: \(oneriFilmName)")
+            movieFetchByName(movieName: oneriFilmName)
         }
     }
     
@@ -96,7 +102,70 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
         movieCommentsCountFetch()
     }
     
+    
+    
+    
+    
+    func movieFetchByName(movieName:String){
+        print("movie details sayfasında onerilenFilmler fonksiyonu çalıştı. movieName: \(movieName)'.")
+        database.collection("filmListesi").whereField("movieName", isEqualTo: movieName).getDocuments { [self] snapshot, error in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            
+            guard let documents = snapshot?.documents, !documents.isEmpty else {
+                print("Film bulunamadı.")
+                return
+            }
+            
+            
 
+            
+            
+            
+            let document = documents.first!
+            let data = document.data()
+            let movieId = document.documentID // <<< BURADA movieId'yi çekiyoruz
+            print("Movie ID: \(movieId)") // test için log
+            // Movie ID’yi bir değişkene veya view’da bir yere ata
+            self.movieId = movieId
+            
+            self.movieName.text = data["movieName"] as? String ?? ""
+            let movieGenre = data["movieGenre"] as? String ?? ""
+            navigationController?.navigationBar.topItem?.title = "\(movieGenre)"
+            movieDescription.text = data["movieDescription"] as? String ?? ""
+            let movieStars = data["movieStars"] as? String ?? ""
+            self.movieStars.text = "Stars: \(movieStars)"
+            let movieDirector = data["movieDirector"] as? String ?? ""
+            self.movieDirector.text = "Director: \(movieDirector)"
+            let movieRunTime = data["movieRunTime"] as? String ?? ""
+            self.movieDuration.text = "Time: \(movieRunTime)"
+            let movieYear = data["movieYear"] as? String ?? ""
+            self.movieYear.text = "Year: \(movieYear)"
+            let movieRating = data["movieRating"] as? String ?? ""
+            movieScore.setTitle("\(movieRating)/10", for: .normal)
+            if let movieImage = data["movieImage"] as? String,
+               let url = URL(string: movieImage) {
+                self.movieImage.sd_setImage(with: url, completed: nil)
+            }
+                
+       
+        }
+    } // filmleri çek finish
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     func movieFetch(movieId:String){
         print("movie details sayfasında movieFetch fonksiyonu çalıştı. MovieId: \(movieId)'.")
@@ -142,40 +211,66 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
     }
     
     @IBAction func updateButton(_ sender: Any) {
-        //resim güncelleme işlemi
-        
-        let storageReference = storage.reference()
-        let mediaFolder = storageReference.child("movieImageMedia")
+
+        //film resmini swiftogreniyorum.com a kaydet
         
         if let data = movieImage.image?.jpegData(compressionQuality: 0.5) {
+            var request = URLRequest(url: URL(string: "https://www.swiftogreniyorum.com/MovieMateResimler/upload.php")!)
+            request.httpMethod = "POST"
+            
+            let boundary = "Boundary-\(UUID().uuidString)"
+            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            
+            var body = Data()
             let uuid = UUID().uuidString
-            let imageReference = mediaFolder.child("\(uuid).jpg")
-            imageReference.putData(data,metadata: nil){ (metadata,error) in
-                if error != nil {
-                    self.makeAlert(titleInput: "Error!", messageInput: error?.localizedDescription ?? "Unknown error", button: "OK")
-                } else { //else başlangıç
-                    imageReference.downloadURL { (url, error) in
-                        if error == nil {
-                            let movieImageUrl = url?.absoluteString
-                           
-                            let movieImageUpdate = ["movieImage": movieImageUrl!] as [String : Any]
-                            let database = Firestore.firestore()
-                            
-                            database.collection("filmListesi").document(self.movieId).updateData(movieImageUpdate) { error in
-                                if let error = error {
-                                    print("Error updating user data: \(error.localizedDescription)")
-                                } else {
-                                    self.makeAlert(titleInput: "Congratulations", messageInput: "Updated", button: "OK") { UIAlertAction in
-                                        self.goBackButton()
-                                    }
+            let filename = "\(uuid).jpg"
+
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(data)
+            body.append("\r\n".data(using: .utf8)!)
+            body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+            
+            request.httpBody = body
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    print("Upload error: \(error)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print("No data returned")
+                    return
+                }
+                
+                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let imageUrl = json["url"] as? String {
+                    print("Image uploaded, url: \(imageUrl)")
+                    
+                    // Firestore’a bu URL’yi kaydet
+                    let movieImageUpdate = ["movieImage": imageUrl]
+                    let database = Firestore.firestore()
+                    
+                    database.collection("filmListesi").document(self.movieId).updateData(movieImageUpdate) { error in
+                        if let error = error {
+                            print("Firestore update error: \(error.localizedDescription)")
+                        } else {
+                            DispatchQueue.main.async {
+                                self.makeAlert(titleInput: "Congratulations", messageInput: "Updated", button: "OK") { _ in
+                                    self.goBackButton()
                                 }
-                            } 
+                            }
                         }
                     }
                 }
-            }
+            }.resume()
         }
-        //resim güncelleme bitiş
+
+        
+        
 
     }// button bitiş
     
@@ -306,8 +401,6 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
                         }
                     })
                 } //comment
-               
-                
             } //send
    
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -319,6 +412,11 @@ class MovieDetails: UIViewController, UIImagePickerControllerDelegate, UINavigat
             self.present(alert, animated: true, completion: nil)
 
     } //button
+    
+    
+    
+    
+    
     
     @IBAction func commentButton(_ sender: Any) {
         performSegue(withIdentifier: "toComment", sender: nil)
