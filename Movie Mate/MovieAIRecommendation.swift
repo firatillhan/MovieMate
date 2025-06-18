@@ -110,7 +110,7 @@ extension MovieAIRecommendation:UITableViewDelegate,UITableViewDataSource{
             tableView.backgroundView = nil
         }
     }
-
+    //Kullanıcının izlediği filmleri uzak sunucuya gönderen ve gelen listeyi liste halinde gösteren fonksiyon.
     func sendWatchedMoviesToServer(watchedMovies: [String],IPadres:String) {
         print("to server fonksiyonu çalıştı. urlKey:\(IPadres)")
         guard let url = URL(string: "http://\(IPadres):5001/recommend") else {
