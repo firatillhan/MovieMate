@@ -1,4 +1,4 @@
-Movie Mate – Yapay Zeka Destekli Film Öneri ve Sosyal Paylaşım Uygulaması
+Movie Mate – Kullanıcı Geçmişine Dayalı Yapay Zeka Destekli Film Öneri ve Sosyal Paylaşım Uygulaması
 Filmlerim, kullanıcıların izleme geçmişine ve beğenilerine göre yapay zeka destekli kişiselleştirilmiş film önerileri sunan, sosyal etkileşim özellikleriyle zenginleştirilmiş bir mobil uygulamadır. Kaggle’dan alınan ve düzenlenen 1000 adetlik film verisi Firebase veritabanına entegre edilerek güçlü bir içerik altyapısı oluşturulmuştur.
 
 Kullanıcılar uygulama üzerinden film listelerini görüntüleyebilir, izledikleri ve beğendikleri filmleri işaretleyebilir, filmler hakkında yorum yapabilir ve diğer kullanıcıların yorumlarını görebilirler. Yorum yapan kişilerin profilleri ziyaret edilerek onların izlediği filmler incelenebilir. Ayrıca kullanıcılar birbirlerini takip edebilir, bu sayede film odaklı bir sosyal ağ deneyimi yaşayabilirler.
